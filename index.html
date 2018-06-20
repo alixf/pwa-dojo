@@ -1,11 +1,13 @@
 <html>
-    <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0080FF">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+	<head>
+		<link rel="manifest" href="/manifest.json" />
+		<meta name="theme-color" content="#0080FF">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<body>
 		Hello world
+		<br />
+		<button id="a2hs">Add to home screen</button>
 		<script>
 			async function main() {
 				if (!('serviceWorker' in navigator))
@@ -18,6 +20,27 @@
 				}
 			}
 			main();
+
+			var deferredPrompt = null;
+			window.addEventListener('beforeinstallprompt', (e) => {
+				console.log("beforeinstallprompt");
+				e.preventDefault();
+				deferredPrompt = e;
+			});
+			document.querySelector("#a2hs").addEventListener('click', (e) => {
+				if(!deferredPrompt) {
+					return;
+				}
+				deferredPrompt.prompt();
+				deferredPrompt.userChoice.then((choiceResult) => {
+					if (choiceResult.outcome === 'accepted') {
+						console.log('User accepted the A2HS prompt');
+					} else {
+						console.log('User dismissed the A2HS prompt');
+					}
+					deferredPrompt = null;
+				});
+			});
 		</script>
 	</body>
 </html>

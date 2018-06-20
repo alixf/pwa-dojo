@@ -3,8 +3,21 @@
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0080FF">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body>
-        Hello world
-    </body>
+	</head>
+	<body>
+		Hello world
+		<script>
+			async function main() {
+				if (!('serviceWorker' in navigator))
+					return;
+				try {
+					await navigator.serviceWorker.register('service-worker.js');
+					console.log("Service worker registered");
+				} catch (e) {
+					console.log("Service worker NOT registered", e);
+				}
+			}
+			main();
+		</script>
+	</body>
 </html>

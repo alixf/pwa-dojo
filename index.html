@@ -8,12 +8,15 @@
 		Hello world
 		<br />
 		<button id="a2hs">Add to home screen</button>
+		<br />
+		<button id="notifications">Add notifications</button>
 		<script>
+			var serviceWorker = null;
 			async function main() {
 				if (!('serviceWorker' in navigator))
 					return;
 				try {
-					await navigator.serviceWorker.register('service-worker.js');
+					serviceWorker = await navigator.serviceWorker.register('service-worker.js');
 					console.log("Service worker registered");
 				} catch (e) {
 					console.log("Service worker NOT registered", e);
@@ -41,6 +44,35 @@
 					deferredPrompt = null;
 				});
 			});
-		</script>
+
+			document.querySelector("#notifications").addEventListener('click', async (e) => {
+				await askPermission();
+				await subscribeUserToPush(serviceWorker);
+			});
+
+				
+			function askPermission() {
+				return new Promise((resolve, reject) => {
+					Notification.requestPermission(result => {
+						if (result !== 'granted') {
+							reject('We weren\'t granted permission.');
+						} else {
+							resolve(result);
+						}
+					});
+				});
+			}
+
+			async function subscribeUserToPush(serviceWorker) {
+				if(!serviceWorker) {
+					return;
+				}
+				const pushSubscription = await serviceWorker.pushManager.subscribe({
+					userVisibleOnly: true,
+					applicationServerKey: urlBase64ToUint8Array('')
+				});
+				console.log(JSON.stringify(pushSubscription));
+			}
+	</script>
 	</body>
 </html>

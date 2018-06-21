@@ -8,6 +8,8 @@
 		Hello world
 		<br />
 		<button id="a2hs">Add to home screen</button>
+		<br />
+		<button id="Purchase">Purchase</button>
 		<script>
 			async function main() {
 				if (!('serviceWorker' in navigator))
@@ -40,6 +42,20 @@
 					}
 					deferredPrompt = null;
 				});
+			});
+
+
+			document.querySelector("#purchase").addEventListener('click', async (e) => {
+				if(!window.PaymentRequest) {
+					return;
+				}
+
+				const supportedPaymentMethods = [{ supportedMethods: 'basic-card' }];
+				const paymentDetails = {total: {label: 'Total', amount: {currency: 'EUR', value: 49.99}}};
+				const options = {};
+				const request = new PaymentRequest(supportedPaymentMethods, paymentDetails, options);
+				const paymentResponse = await request.show();
+				await paymentResponse.complete();
 			});
 		</script>
 	</body>
